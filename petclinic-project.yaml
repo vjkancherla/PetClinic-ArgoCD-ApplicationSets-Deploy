@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: production
+  namespace: argocd
+spec:
+  description: PetClinic Production Project
+  
+  sourceRepos:
+    - 'https://github.com/vjkancherla/PetClinic-ArgoCD-ApplicationSets.git'
+    - 'https://github.com/vjkancherla/PetClinic-ArgoCD-ApplicationSets-Deploy.git'
+  
+  destinations:
+    - namespace: 'petclinic-*'
+      server: https://kubernetes.default.svc
+    - namespace: 'argocd'
+      server: https://kubernetes.default.svc
+  
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  
+  namespaceResourceWhitelist:
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: 'apps'
+      kind: Deployment
+    - group: 'networking.k8s.io'
+      kind: Ingress
+    - group: 'argoproj.io'
+      kind: Application
+    - group: 'argoproj.io'
+      kind: ApplicationSet
+    - group: 'autoscaling'
+      kind: HorizontalPodAutoscaler

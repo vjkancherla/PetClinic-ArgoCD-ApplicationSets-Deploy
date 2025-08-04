@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: petclinic-production
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: production
+  source:
+    path: helm-chart
+    repoURL: https://github.com/vjkancherla/PetClinic-ArgoCD-ApplicationSets
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: image.tag
+          value: "main-1-abc12345"
+  destination:
+    namespace: petclinic-production
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+      allowEmpty: true

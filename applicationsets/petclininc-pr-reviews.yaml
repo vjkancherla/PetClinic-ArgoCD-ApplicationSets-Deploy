@@ -19,7 +19,7 @@ spec:
   template:
     metadata:
       name: 'petclinic-pr-{{number}}-{{head_short_sha}}'
-      namespace: argocd
+      namespace: argo-cd
       finalizers:
         - resources-finalizer.argocd.argoproj.io
       labels:

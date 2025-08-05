@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: petclinic-pr-previews
-  namespace: argo-cd
+  namespace: argocd
 spec:
   generators:
   - pullRequest:
@@ -13,14 +13,19 @@ spec:
           secretName: github-token
           key: token
         labels:
-          - preview  # Only PRs with 'preview' label will get deployed
-      requeueAfterSeconds: 120
+          - preview        # User adds this to request preview
+          - image-ready    # Jenkins adds this after successful build
+      requeueAfterSeconds: 60  # Check every minute
   template:
     metadata:
       name: 'petclinic-pr-{{number}}-{{head_short_sha}}'
-      namespace: argo-cd
+      namespace: argocd
       finalizers:
         - resources-finalizer.argocd.argoproj.io
+      labels:
+        app.kubernetes.io/name: petclinic
+        app.kubernetes.io/instance: 'pr-{{number}}'
+        app.kubernetes.io/part-of: petclinic-previews
     spec:
       project: production
       source:
@@ -33,6 +38,8 @@ spec:
           parameters:
             - name: image.tag
               value: "pr-{{number}}-{{head_short_sha}}"
+            - name: image.pullPolicy
+              value: "Always"  # Always pull to get latest image
       destination:
         server: https://kubernetes.default.svc
         namespace: petclinic-pr-{{number}}
@@ -40,6 +47,12 @@ spec:
         automated:
           selfHeal: true
           prune: true
-          allowEmpty: true
         syncOptions:
+          - ServerSideApply=true
           - CreateNamespace=true
+        retry:
+          limit: 8           # Reduced since image should be ready
+          backoff:
+            duration: 15s    # Shorter delays since image is ready
+            factor: 2
+            maxDuration: 5m  # Maximum 5 minute delay

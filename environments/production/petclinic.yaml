@@ -16,7 +16,7 @@ spec:
         - values.yaml
       parameters:
         - name: image.tag
-          value: "main-8-7846e1b5"
+          value: "main-9-7846e1b5"
   destination:
     namespace: petclinic-production
     server: https://kubernetes.default.svc

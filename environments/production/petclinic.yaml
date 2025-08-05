@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: petclinic-production
-  namespace: argocd
+  namespace: argo-cd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
@@ -25,3 +25,5 @@ spec:
       selfHeal: true
       prune: true
       allowEmpty: true
+    syncOptions:
+          - CreateNamespace=true

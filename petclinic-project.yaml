@@ -2,7 +2,6 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: production
-  namespace: argocd
 spec:
   description: PetClinic Production Project
   
@@ -13,7 +12,7 @@ spec:
   destinations:
     - namespace: 'petclinic-*'
       server: https://kubernetes.default.svc
-    - namespace: 'argocd'
+    - namespace: 'argo-cd'
       server: https://kubernetes.default.svc
   
   clusterResourceWhitelist:
